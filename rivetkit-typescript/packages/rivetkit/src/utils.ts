@@ -207,19 +207,21 @@ export type LongTimeoutHandle = { abort: () => void };
  *
  * @experimental
  */
-export function promiseWithResolvers<T>(onReject: (reason?: any) => void): {
-	promise: Promise<T>;
-	resolve: (value: T | PromiseLike<T>) => void;
-	reject: (reason?: any) => void;
+export function promiseWithResolvers<T>(onReject?: (reason?: any) => void): {
+    promise: Promise<T>;
+    resolve: (value: T | PromiseLike<T>) => void;
+    reject: (reason?: any) => void;
 } {
-	let resolve!: (value: T | PromiseLike<T>) => void;
-	let reject!: (reason?: any) => void;
-	const promise = new Promise<T>((res, rej) => {
-		resolve = res;
-		reject = rej;
-	});
-	promise.catch(onReject);
-	return { promise, resolve, reject };
+    let resolve!: (value: T | PromiseLike<T>) => void;
+    let reject!: (reason?: any) => void;
+    const promise = new Promise<T>((res, rej) => {
+        resolve = res;
+        reject = rej;
+    });
+    if (onReject) {
+        promise.catch(onReject);
+    }
+    return { promise, resolve, reject };
 }
 
 /**
